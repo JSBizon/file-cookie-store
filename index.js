@@ -3,7 +3,7 @@
 var FS = require('fs'), 
     UTIL = require('util'),
     Q = require('q'),
-    TOUGH = require('tough-cookie'),
+    TOUGH = require('tough-cookie2'),
     canonicalDomain = TOUGH.canonicalDomain,
     permuteDomain = TOUGH.permuteDomain,
     permutePath = TOUGH.permutePath,
@@ -52,7 +52,7 @@ FileCookieStore.prototype.synchronous = false;
 
 
 FileCookieStore.prototype.inspect = function() {
-    return "{ idx: "+util.inspect(this.idx, false, 2)+' }';
+    return "{ idx: " + UTIL.inspect(this.idx, false, 2) + ' }';
 };
 
 
@@ -79,19 +79,6 @@ FileCookieStore.prototype._read = function (cb) {
     self._readFile(cb);
 };
 
-/*
-function lock_decorator (lock_file, options, cb) {
-    LOCKFILE.lock(lock_file, options, function (err, release) {
-        cb(err,release);
-    });
-}
-
-function unlock_decorator (lock_file, cb) {
-    LOCKFILE.unlock(lock_file, function (err) {
-        cb(err);
-    });
-}
-*/
 
 FileCookieStore.prototype._get_lock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
@@ -100,25 +87,13 @@ FileCookieStore.prototype._get_lock_func = function (disable_lock) {
         retries : this.lockfile_retries,
         retryWait : 50
     }) : new Q();
-    
-    /*
-    return ! disable_lock && this.lockfile ? Q.nfcall(lock_decorator, lock_file, {
-        retries : this.lockfile_retries,
-        retryWait : 50
-    }) : new Q();
-    */
 };
-
 
 
 FileCookieStore.prototype._get_unlock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
     return ! disable_lock && this.lockfile ? Q.nfcall(LOCKFILE.unlock, lock_file)
             : new Q();
-    /*
-    return ! disable_lock && this.lockfile ? Q.nfcall(unlock_decorator, lock_file)
-            : new Q();
-            */
 };
 
 
@@ -129,7 +104,6 @@ FileCookieStore.prototype._write = function (options, cb) {
     cb = cb || noop;
     self._get_lock_func(options.disable_lock).
         then(function () {
-            console.log("For write: ", data);
             return Q.nfcall(FS.writeFile, self.file, data, {});
         }).
         then(function () {
@@ -193,7 +167,6 @@ FileCookieStore.prototype.serialize = function(idx) {
                              ].join("\t")+ "\n";
                     data += line;
                     
-                    //console.log("L: ", line);
                 }
             }
         }

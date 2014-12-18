@@ -7,6 +7,9 @@
       "type" : "git",
       "url" : "https://github.com/JSBizon/file-cookie-store.git"
   },
+  "scripts": {
+      "test": "grunt"
+  },
   "keywords": [
                "Netscape",
                "cookie",
@@ -24,7 +27,7 @@
     "grunt-contrib-jshint" : "~0.10.0"
   },
   "dependencies": {
-    "tough-cookie" : "~0.12.0",
+    "tough-cookie2" : "~0.12.0",
     "punycode" : "~1.2.3",
     "lockfile" : "~1.0.0",
     "q" : "~1.0.1"

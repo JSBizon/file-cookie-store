@@ -1,6 +1,6 @@
 var expect = require('expect.js'),
     FS = require('fs'),
-    TOUGH = require('tough-cookie'),
+    TOUGH = require('tough-cookie2'),
     Q =     require('q');
 
 describe('Test file cookie store', function() {
@@ -30,7 +30,6 @@ describe('Test file cookie store', function() {
     beforeEach(function(done){
         FS.writeFileSync(COOKIES_TEST_FILE2, FS.readFileSync(COOKIES_TEST_FILE) );
         cookie_store = new FileCookieStore(COOKIES_TEST_FILE2);
-        console.log("beforeEach");
         done();
     });
     
@@ -38,7 +37,6 @@ describe('Test file cookie store', function() {
         try {
             FS.unlinkSync(COOKIES_TEST_FILE2);
         } catch (err) {};
-        console.log("afterEach");
         done();
     });
     
@@ -359,6 +357,67 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
+        
+        it('should mass cookies store update without auto_sync', function (done) {
+            var i=0, 
+              stores_num = PARALLEL_WRITES, 
+              keys = [], 
+              cookies = [], 
+              fns = [],
+              expire = new Date(),
+              test_domain = 'noautosync.masstest.com',
+              cookie_store = new FileCookieStore(COOKIES_TEST_FILE2, {auto_sync : false});
+            
+            expire.setDate(expire.getDate() + 2);
+            
+            for (i = 0; i < stores_num; i++) {
+                var key = 'key ' + i;
+                var cookie = new TOUGH.Cookie({
+                    domain : test_domain,
+                    path : '/',
+                    secure : true,
+                    expires : expire,
+                    key : key,
+                    value : 'value ' + i,
+                    httpOnly : false
+                });
+                
+                var func = Q.nbind(cookie_store.putCookie, cookie_store);
+                fns.push(func(cookie));
+                keys.push(key);
+            }
+            
+            Q.all(fns)
+            .then(function () {
+                return Q.nbind(cookie_store.save, cookie_store)();
+            })
+            .then(function () {
+                var cookie_store = new FileCookieStore(COOKIES_TEST_FILE2);
+                return Q.nbind(cookie_store.findCookies, cookie_store)(test_domain,null);
+            })
+            .then(function(cookies) {
+                expect(cookies).to.be.a(Array);
+                expect(cookies).to.have.length(PARALLEL_WRITES);
+                expect(cookies[0]).to.be.a(TOUGH.Cookie);
+            
+                var map_key_cookie = {};
+            
+                cookies.forEach(function (cookie) {
+                    map_key_cookie[cookie.key] = cookie;
+                });
+            
+                keys.forEach(function (key) {
+                    expect(map_key_cookie[key]).to.be.a(TOUGH.Cookie);
+                });
+            
+                done();
+            })
+            .catch(function (err){
+                done(err);
+            }).
+            done();
+            
+        });
     });
     
     
@@ -427,7 +486,7 @@ describe('Test file cookie store', function() {
         });
         
         it('should find cookie in CookieJar', function (done) {
-            
+            this.timeout(10000);
             Q.nbind(cookie_jar.getCookies, cookie_jar)('http://facebook.com')
                 .then(function (cookies) {
                     expect(cookies).to.be.a(Array);
@@ -490,7 +549,7 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
-        /*
+        
         it('should not find cookie in CookieJar', function (done) {
             
             Q.nbind(cookie_jar.getCookies, cookie_jar)('http://www.thefacebook.com/').
@@ -531,7 +590,6 @@ describe('Test file cookie store', function() {
                     return Q.nbind(cookie_jar.getCookies, cookie_jar)('http://setcookietest.com/test/path');
                 }).
                 then( function (cookies) {
-                    console.log("aaa");
                     expect(cookies).to.be.a(Array);
                     expect(cookies).to.have.length(1);
                     expect(cookies[0]).to.be.a(TOUGH.Cookie);
@@ -557,7 +615,6 @@ describe('Test file cookie store', function() {
                 value : 'value333',
                 httpOnly : false
             });
-            console.log("qqq");
             Q.nbind(cookie_jar.setCookie, cookie_jar)(cookie, 'http://setcookietest.com/').
                 then( function (cookie) {
                     expect(cookie).to.be.a(TOUGH.Cookie);
@@ -652,6 +709,6 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
-        */
+        
     });
 });
