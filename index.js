@@ -104,7 +104,7 @@ FileCookieStore.prototype._write = function (options, cb) {
     cb = cb || noop;
     self._get_lock_func(options.disable_lock).
         then(function () {
-            return Q.nfcall(FS.writeFile, self.file, data, {});
+            return Q.nfcall(FS.writeFile, self.file, data, {mode : self.mode });
         }).
         then(function () {
             cb();

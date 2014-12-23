@@ -1,13 +1,59 @@
-# file-cookie-store
-  
-## Objective
+# Introduction
 
+file-cookie-store - this is file store for cookie management library [tough cookie](https://github.com/goinstant/tough-cookie "tough cookie").
+Library allow parallel access to the cookies file based on [lockfile](https://github.com/npm/lockfile) library. 
 
+## Synopsis
+
+``` javascript
+          var FileCookieStore = require('file-cookie-store');
+          var CookieJar = require("tough-cookie2").CookieJar; //note: it use tough-cookie2 by default, it's available for use with tough-cookie
+          
+          var jar = new CookieJar(new FileCookieStore("./cookie.txt", {lockfile : true}));
+```
+
+## Installation
+If you have npm installed, you can simply type:
+          
+          npm install file-cookie-store
+          
+Or you can clone this repository using the git command:
+
+          git clone git://github.com/JSBizon/node-memorystream.git
 
 ## Usage
 
-## Netscape's cookie.txt file
-http://www.cookiecentral.com/faq/#3.5
+Class FileCookieStore has different properties:
+
+  * force_parse - continue parse file and don't throw exception if bad line was found ( Default : _false_)
+  * lockfile - use lockfile for access to the cookies file ( Default : _true_)
+  * mode - mode of new created file ( Default : _438_ aka 0666 in Octal)
+  * http_only_extension - use http_only extension - prefix #HttpOnly_ for http only cookies. Curl, FF, etc use this kind of entries ( Default : _true_)
+  * lockfile_retries - attempts for lock file before throw exception ( Default : _200_)
+  * auto_sync - in this mode cookies rewrote to the file after every change. If you set auto_sync to the _false_, you have to call method 'save' manually ( Default : _true_). 
+
+Example of using FileCookieStore without auto_sync mode:
+
+``` javascript
+          var Q = require('q');
+          var FileCookieStore = require('file-cookie-store');
+          var TOUGH = require("tough-cookie2");
+          
+          var cookies_store = new FileCookieStore("./cookie.txt", {auto_sync : false});
+          var jar = new TOUGH.CookieJar(cookies_store);
+          
+          Q.nbind(jar.setCookie, jar)(new new TOUGH.Cookie({...}), 'http://test.com/')
+          .then(function () {
+                    return Q.nbind(jar.setCookie, jar)(new TOUGH.Cookie({...}), 'http://test.com/')
+          }).then(function () {
+                    return Q.nbind(cookies_store.save, cookies_store)();//save changes to the file
+          });
+```
+
+#### Store file format
+
+Cookies stored in [Netscape's cookie.txt file](http://www.cookiecentral.com/faq/#3.5).
+This allow import/export cookies into/from different browsers. And use with command-line network tools: curl, wget, etc.
 
 The layout of Netscape's cookies.txt file is such that each line contains one name-value pair. An example cookies.txt file may have an entry that looks like this:
 
@@ -27,9 +73,5 @@ value - The value of the variable.
 
 
 
-## Developing
 
-
-
-### Tools
 
