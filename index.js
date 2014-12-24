@@ -15,8 +15,6 @@ function isString (str) {
 
 function noop() {}
 
-var qStop = Q.promise(function () {});
-
 function lockFileName (file_name) {
     return file_name + '.lock';
 }
@@ -39,8 +37,9 @@ function FileCookieStore(file, opt) {
     this.auto_sync = opt.hasOwnProperty('auto_sync') ? opt.auto_sync 
                     : true;
     
-    if (!this.file || !isString(this.file))
+    if (!this.file || !isString(this.file)) {
         throw new Error("Unknown file for read/write cookies");
+    }
 
     this.idx = {};
 }
@@ -61,12 +60,12 @@ FileCookieStore.prototype._readFile = function (cb) {
     Q.nfcall(FS.readFile, self.file, 'utf8').
     then(function (data) {
         self.readed = true;
-        if ( ! data ) return cb(null, self);
+        if ( ! data ) { return cb(null, self); }
         self.deserialize(data);
         cb(null, self);
     }).
     catch(function(err){
-        if ( ! (err.code && err.code == 'ENOENT') ) 
+        if ( ! (err.code && err.code === 'ENOENT') ) 
             cb(err);
         else
             cb();
@@ -255,8 +254,7 @@ FileCookieStore.prototype.findCookie = function(domain, path, key, cb) {
 
 FileCookieStore.prototype.findCookies = function (domain, path, cb) {
     var self = this,
-        results = [],
-        pathMatcher;
+        results = [];
     if (! domain ) return cb(null,[]);
     
     var can_domain = canonicalDomain(domain);
@@ -268,9 +266,13 @@ FileCookieStore.prototype.findCookies = function (domain, path, cb) {
             // null or '/' means "all paths"
             pathMatcher = function matchAll(domainIndex) {
                 for (var curPath in domainIndex) {
-                    var pathIndex = domainIndex[curPath];
-                    for (var key in pathIndex) {
-                        results.push(pathIndex[key]);
+                    if (domainIndex.hasOwnProperty(curPath)) {
+                        var pathIndex = domainIndex[curPath];
+                        for (var key in pathIndex) {
+                            if (pathIndex.hasOwnProperty(key)) {
+                                results.push(pathIndex[key]);
+                            }
+                        }
                     }
                 }
             };
@@ -281,7 +283,9 @@ FileCookieStore.prototype.findCookies = function (domain, path, cb) {
                     return;
                 }
                 for (var key in pathIndex) {
-                    results.push(pathIndex[key]);
+                    if (pathIndex.hasOwnProperty(key)) {
+                        results.push(pathIndex[key]);
+                    }
                 }
             };
         } else {

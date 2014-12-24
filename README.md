@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/JSBizon/file-cookie-store.svg?branch=master)](https://travis-ci.org/JSBizon/file-cookie-store)
+
 # Introduction
 
 file-cookie-store - this is file store for cookie management library [tough cookie](https://github.com/goinstant/tough-cookie "tough cookie").
