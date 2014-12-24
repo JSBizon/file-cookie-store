@@ -8,10 +8,10 @@ Library allow parallel access to the cookies file based on [lockfile](https://gi
 ## Synopsis
 
 ``` javascript
-          var FileCookieStore = require('file-cookie-store');
-          var CookieJar = require("tough-cookie2").CookieJar; //note: it use tough-cookie2 by default, it's available for use with tough-cookie
-          
-          var jar = new CookieJar(new FileCookieStore("./cookie.txt", {lockfile : true}));
+var FileCookieStore = require('file-cookie-store');
+var CookieJar = require("tough-cookie2").CookieJar; //note: it use tough-cookie2 by default, it's available for use with tough-cookie
+
+var jar = new CookieJar(new FileCookieStore("./cookie.txt", {lockfile : true}));
 ```
 
 ## Installation
@@ -37,19 +37,19 @@ Class FileCookieStore has different properties:
 Example of using FileCookieStore without auto_sync mode:
 
 ``` javascript
-          var Q = require('q');
-          var FileCookieStore = require('file-cookie-store');
-          var TOUGH = require("tough-cookie2");
-          
-          var cookies_store = new FileCookieStore("./cookie.txt", {auto_sync : false});
-          var jar = new TOUGH.CookieJar(cookies_store);
-          
-          Q.nbind(jar.setCookie, jar)(new new TOUGH.Cookie({...}), 'http://test.com/')
-          .then(function () {
-                    return Q.nbind(jar.setCookie, jar)(new TOUGH.Cookie({...}), 'http://test.com/')
-          }).then(function () {
-                    return Q.nbind(cookies_store.save, cookies_store)();//save changes to the file
-          });
+var Q = require('q');
+var FileCookieStore = require('file-cookie-store');
+var TOUGH = require("tough-cookie2");
+
+var cookies_store = new FileCookieStore("./cookie.txt", {auto_sync : false});
+var jar = new TOUGH.CookieJar(cookies_store);
+
+Q.nbind(jar.setCookie, jar)(new new TOUGH.Cookie({...}), 'http://test.com/')
+.then(function () {
+          return Q.nbind(jar.setCookie, jar)(new TOUGH.Cookie({...}), 'http://test.com/')
+}).then(function () {
+          return Q.nbind(cookies_store.save, cookies_store)();//save changes to the file
+});
 ```
 
 #### Store file format
@@ -65,13 +65,13 @@ Each line represents a single piece of stored information. A tab is inserted bet
 
 From left-to-right, here is what each field represents:
 
-domain - The domain that created AND that can read the variable.
-flag - A TRUE/FALSE value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
-path - The path within the domain that the variable is valid for.
-secure - A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
-expiration - The UNIX time that the variable will expire on. UNIX time is defined as the number of seconds since Jan 1, 1970 00:00:00 GMT.
-name - The name of the variable.
-value - The value of the variable. 
+  * domain - The domain that created AND that can read the variable.
+  * flag - A TRUE/FALSE value indicating if all machines within a given domain can access the variable. This value is set automatically by the browser, depending on the value you set for domain.
+  * path - The path within the domain that the variable is valid for.
+  * secure - A TRUE/FALSE value indicating if a secure connection with the domain is needed to access the variable.
+  * expiration - The UNIX time that the variable will expire on. UNIX time is defined as the number of seconds since Jan 1, 1970 00:00:00 GMT.
+  * name - The name of the variable.
+  * value - The value of the variable. 
 
 
 
