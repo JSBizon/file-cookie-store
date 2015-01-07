@@ -140,6 +140,16 @@ describe('Test file cookie store', function() {
                 done();
             });
         });
+        
+        it ('wrong arguments', function (done) {
+            cookie_store.findCookie(null, null, null, function (err, cookie) {
+                
+                expect(err).not.to.be.ok();
+                expect(cookie).not.to.be.ok();
+                
+                done();
+            });
+        });
     });
     
   
@@ -167,6 +177,17 @@ describe('Test file cookie store', function() {
                 expect(cookies).to.have.length(4);
                 expect(cookies[0]).to.be.a(TOUGH.Cookie);
                 expect(cookies[0].domain).to.be('facebook.com');
+                
+                done();
+            });
+        });
+        
+        it ('wrong arguments', function (done) {
+            cookie_store.findCookies(undefined, null, function (err, cookies) {
+                
+                expect(err).not.to.be.ok();
+                expect(cookies).to.be.a(Array);
+                expect(cookies).to.have.length(0);
                 
                 done();
             });
