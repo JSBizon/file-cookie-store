@@ -150,6 +150,36 @@ describe('Test file cookie store', function() {
                 done();
             });
         });
+        
+        it ('wrong arguments2', function (done) {
+            cookie_store.findCookie(null, '/', null, function (err, cookie) {
+                
+                expect(err).not.to.be.ok();
+                expect(cookie).not.to.be.ok();
+                
+                done();
+            });
+        });
+        
+        it ('wrong arguments3', function (done) {
+            cookie_store.findCookie('.amazon.com', null, 'skin', function (err, cookie) {
+                
+                expect(err).not.to.be.ok();
+                expect(cookie).not.to.be.ok();
+                
+                done();
+            });
+        });
+        
+        it ('wrong arguments4', function (done) {
+            cookie_store.findCookie('.amazon.com', '/', null, function (err, cookie) {
+                
+                expect(err).not.to.be.ok();
+                expect(cookie).not.to.be.ok();
+                
+                done();
+            });
+        });
     });
     
   
@@ -192,6 +222,7 @@ describe('Test file cookie store', function() {
                 done();
             });
         });
+        
     });
     
   

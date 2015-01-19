@@ -21,7 +21,7 @@ If you have npm installed, you can simply type:
           
 Or you can clone this repository using the git command:
 
-          git clone git://github.com/JSBizon/node-memorystream.git
+          git clone git://github.com/JSBizon/file-cookie-store.git
 
 ## Usage
 
