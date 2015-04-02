@@ -1,6 +1,6 @@
 {
   "name": "file-cookie-store",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Store cookies in Netscape's file",
   "main": "index.js",
   "repository": {
@@ -17,20 +17,19 @@
     "Netscape file",
     "cookiejar",
     "tough-cookie",
-    "tough-cookie2",
     "file cookie",
     "cookie store"
   ],
   "devDependencies": {
     "expect.js": "~0.2.0",
-    "mocha": "~1.20.0",
+    "mocha": "~2.2.1",
     "grunt": "~0.4",
     "grunt-cli": "~0.1.13",
     "grunt-mocha-test": "~0.12.2",
     "grunt-contrib-jshint": "~0.10.0"
   },
   "dependencies": {
-    "tough-cookie2": "~0.12.0",
+    "tough-cookie": "~0.12.0",
     "punycode": "~1.2.3",
     "lockfile": "~1.0.0",
     "q": "~1.0.1"

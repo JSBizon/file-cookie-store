@@ -3,7 +3,7 @@
 var FS = require('fs'), 
     UTIL = require('util'),
     Q = require('q'),
-    TOUGH = require('tough-cookie2'),
+    TOUGH = require('tough-cookie'),
     canonicalDomain = TOUGH.canonicalDomain,
     permuteDomain = TOUGH.permuteDomain,
     permutePath = TOUGH.permutePath,
@@ -36,6 +36,8 @@ function FileCookieStore(file, opt) {
                     : 200;
     this.auto_sync = opt.hasOwnProperty('auto_sync') ? opt.auto_sync 
                     : true;
+    this.no_file_error = opt.hasOwnProperty('no_file_error') ? opt.no_file_error
+                    : false;
     
     if (!this.file || !isString(this.file)) {
         throw new Error("Unknown file for read/write cookies");
@@ -65,7 +67,7 @@ FileCookieStore.prototype._readFile = function (cb) {
         cb(null, self);
     }).
     catch(function(err){
-        if ( ! (err.code && err.code === 'ENOENT') ) 
+        if ( ! (err.code && err.code === 'ENOENT' && ! self.no_file_error ) ) 
             cb(err);
         else
             cb();
@@ -155,9 +157,12 @@ FileCookieStore.prototype.serialize = function(idx) {
                 var cookie = idx[domain][path][key];
                 if (cookie) {
                     
-                    var original_domain = cookie.original_domain || cookie.domain;
-                    var line = [ cookie.httpOnly && this.http_only_extension ? '#HttpOnly_' + original_domain : original_domain, 
-                             /^\./.test(original_domain) ? "TRUE" : "FALSE",
+                    var cookie_domain = cookie.domain;
+                    if ( ! cookie.hostOnly) {
+                        cookie_domain = '.' + cookie_domain;
+                    }
+                    var line = [ this.http_only_extension && cookie.httpOnly ? '#HttpOnly_' + cookie_domain : cookie_domain, 
+                             /^\./.test(cookie_domain) ? "TRUE" : "FALSE",
                              cookie.path,
                              cookie.secure ? "TRUE" : "FALSE", 
                              cookie.expires && cookie.expires != 'Infinity' ? Math.round(cookie.expires.getTime() / 1000) : 0,
@@ -211,7 +216,9 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
                 else
                     return;
             
-            var can_domain = canonicalDomain(parsed[0]);
+            var domain = parsed[0],
+                can_domain = canonicalDomain(domain);
+
             var cookie = new TOUGH.Cookie({
                 domain : can_domain,
                 path : parsed[2],
@@ -219,9 +226,10 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
                 expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : undefined,
                 key : decodeURIComponent(parsed[5]),
                 value : decodeURIComponent(parsed[6]),
-                httpOnly : http_only 
+                httpOnly : http_only,
+                hostOnly : /^\./.test(domain) ? false : true
             });
-            cookie.original_domain = parsed[0];
+           
             self._addCookie(cookie);
         }
     });
@@ -367,5 +375,52 @@ FileCookieStore.prototype.removeCookies = function(domain, path, cb) {
     }, cb);
 };
 
+
+FileCookieStore.prototype.export = function(file_store, cb) {
+    var self = this;
+    if ( arguments.length < 2) {
+        cb = file_store;
+        file_store = null;
+    }
+    if (! file_store) {
+        file_store = [];
+    }
+    this._read(function (err) {
+        var fns = [];
+        var idx = self.idx;
+        for (var domain in idx) {
+            if ( ! idx.hasOwnProperty(domain) ) continue;
+            for ( var path in idx[domain] ) {
+                if ( ! idx[domain].hasOwnProperty(path) ) continue;
+                for ( var key in idx[domain][path] ) {
+                    if ( ! idx[domain][path].hasOwnProperty(key) ) continue;
+                    var cookie = idx[domain][path][key];
+                    if (cookie) {
+                        if (file_store instanceof TOUGH.Store) {
+                            var func = Q.nbind(file_store.putCookie, file_store);
+                            fns.push(func(cookie));
+                        } else {
+                            file_store.push(cookie);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (fns.length) {
+            Q.all(fns).then(function(){
+                cb(null, file_store);
+            }).
+            catch(function (err){
+                cb(err);
+            }).
+            done();
+        } else {
+            cb(null, file_store);
+        }
+    });
+
+    return file_store;
+};
 
 module.exports = FileCookieStore;

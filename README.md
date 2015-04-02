@@ -9,7 +9,7 @@ Library allow parallel access to the cookies file based on [lockfile](https://gi
 
 ``` javascript
 var FileCookieStore = require('file-cookie-store');
-var CookieJar = require("tough-cookie2").CookieJar; //note: it use tough-cookie2 by default, it's available for use with tough-cookie
+var CookieJar = require("tough-cookie").CookieJar;
 
 var jar = new CookieJar(new FileCookieStore("./cookie.txt", {lockfile : true}));
 ```
@@ -39,7 +39,7 @@ Example of using FileCookieStore without auto_sync mode:
 ``` javascript
 var Q = require('q');
 var FileCookieStore = require('file-cookie-store');
-var TOUGH = require("tough-cookie2");
+var TOUGH = require("tough-cookie");
 
 var cookies_store = new FileCookieStore("./cookie.txt", {auto_sync : false});
 var jar = new TOUGH.CookieJar(cookies_store);

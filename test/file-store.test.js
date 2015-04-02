@@ -1,6 +1,8 @@
 var expect = require('expect.js'),
     FS = require('fs'),
-    TOUGH = require('tough-cookie2'),
+    util = require('util'),
+    TOUGH = require('tough-cookie'),
+    MemoryCookieStore = require('tough-cookie/lib/memstore').MemoryCookieStore,
     Q =     require('q');
 
 describe('Test file cookie store', function() {
@@ -69,6 +71,13 @@ describe('Test file cookie store', function() {
                 
                 expect(err).to.be.ok();
                 
+                done();
+            });
+        });
+
+        it('should throw exception if file not found', function (done) {
+            new FileCookieStore(COOKIES_TEST_FILE_NEW,{no_file_error: true}).findCookies('.ebay.com', null, function (err,cookies) {
+                expect(err).to.be.ok();
                 done();
             });
         });
@@ -211,6 +220,12 @@ describe('Test file cookie store', function() {
                 done();
             });
         });
+
+
+
+        it ('should not find host only cookies', function (done) {
+            done();
+        });
         
         it ('wrong arguments', function (done) {
             cookie_store.findCookies(undefined, null, function (err, cookies) {
@@ -244,7 +259,7 @@ describe('Test file cookie store', function() {
                 expect(cookies).to.have.length(5);
                 
                 var fns = [],
-                    cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW)
+                    cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW);
                 
                 cookies.forEach(function (cookie) {
                     var func = Q.nbind(cookie_store2.putCookie, cookie_store2);
@@ -531,7 +546,14 @@ describe('Test file cookie store', function() {
             cookie_jar = new TOUGH.CookieJar(new FileCookieStore(COOKIES_TEST_FILE2));
             done();
         });
-        
+
+        afterEach(function(done){
+            try {
+                FS.unlinkSync(COOKIES_TEST_FILE_NEW);
+            } catch (err) {};
+            done();
+        });
+
         it ('should create CookieJar object', function (done) {
             expect(cookie_jar).to.be.a(TOUGH.CookieJar);
             done();
@@ -622,6 +644,32 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
+
+        it ('should find "host only" cookies', function (done) {
+            Q.nbind(cookie_jar.getCookies, cookie_jar)('http://www.aff.store.com/').
+                then(function (cookies){
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(2);
+                    done();
+                }).
+                catch(function (){
+                    done(err);
+                }).
+                done();
+        });
+
+        it ('should find "host only" cookies and domain cookies', function (done) {
+            Q.nbind(cookie_jar.getCookies, cookie_jar)('http://aff.store.com/').
+                then(function (cookies){
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(6);
+                    done();
+                }).
+                catch(function (){
+                    done(err);
+                }).
+                done();
+        });
         
         it('should put cookie in CookieJar', function (done) {
             
@@ -654,6 +702,7 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
+
         
         it('should save cookie into file from CookieJar', function (done) {
             var expire = new Date();
@@ -679,6 +728,7 @@ describe('Test file cookie store', function() {
                     expect(cookies[0]).to.be.a(TOUGH.Cookie);
                     
                     var cookie_jar2 = new TOUGH.CookieJar(new FileCookieStore(COOKIES_TEST_FILE2));
+
                     return Q.nbind(cookie_jar2.getCookies, cookie_jar2)('http://setcookietest.com/');
                 }).
                 then( function (cookies) {
@@ -761,6 +811,96 @@ describe('Test file cookie store', function() {
                 }).
                 done();
         });
-        
+
+
+        it('should save "host only" cookies correctly', function (done) {
+            var cookies_urls = ['http://aff.store.com/', 'http://www.aff.store.com/', 
+                'http://store.com', 'http://www.store.com'],
+                fns = [];
+            for (i = 0; i < cookies_urls.length; i++) {                
+                var func = Q.nbind(cookie_jar.getCookies, cookie_jar);
+                fns.push(func(cookies_urls[i]));
+            }
+
+            var cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW),
+                cookie_jar2 = new TOUGH.CookieJar(new FileCookieStore(COOKIES_TEST_FILE_NEW));
+
+            Q.all(fns).spread(function(cookies1,cookies2,cookies3,cookies4){                
+                expect(cookies1).to.be.a(Array);
+                expect(cookies1).to.have.length(6);
+                expect(cookies2).to.be.a(Array);
+                expect(cookies2).to.have.length(2);
+                expect(cookies3).to.be.a(Array);
+                expect(cookies3).to.have.length(2);
+                expect(cookies4).to.be.a(Array);
+                expect(cookies4).to.have.length(1);
+
+                var all_cookies = cookies1.concat(cookies1, cookies2, cookies3,cookies4),
+                    put_fns = [];
+
+                for (i = 0; i < all_cookies.length; i++) {
+                    var func = Q.nbind(cookie_store2.putCookie, cookie_store2);
+                    put_fns.push(func(all_cookies[i]));                    
+                }
+                
+                return Q.all(put_fns);               
+            }).then(function () {
+                return Q.nbind(cookie_jar2.getCookies, cookie_jar2)('http://aff.store.com/');
+            }).then(function (cookies) {
+                expect(cookies).to.be.a(Array);
+                expect(cookies).to.have.length(6);
+                return Q.nbind(cookie_jar2.getCookies, cookie_jar2)('http://store.com/');
+            }).then(function (cookies) {
+                expect(cookies).to.be.a(Array);
+                expect(cookies).to.have.length(2);
+                done();
+            }).
+            catch(function (err){
+                done(err);
+            }).
+            done();
+        });
     });
+
+    describe("#export", function () {
+        it('should export cookies to the array', function (done) {
+            cookie_store.export(function (err, cookies) {
+                if (err) {
+                    done(err);
+                } else {
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(43);
+                    done();
+                }
+            });
+        });
+
+        it('should export cookies to the other store', function (done) {
+            var memory_cookie_store = new MemoryCookieStore();
+            cookie_store.export(memory_cookie_store, function (err, cookies) {
+                if (err) {
+                    done(err);
+                } else {
+                    var idx = memory_cookie_store.idx,
+                        cookies_num = 0;
+                    for (var domain in idx) {
+                        if ( ! idx.hasOwnProperty(domain) ) continue;
+                        for ( var path in idx[domain] ) {
+                            if ( ! idx[domain].hasOwnProperty(path) ) continue;
+                            for ( var key in idx[domain][path] ) {
+                                if ( ! idx[domain][path].hasOwnProperty(key) ) continue;
+                                var cookie = idx[domain][path][key];
+                                if (cookie) {
+                                    ++cookies_num;
+                                }
+                            }
+                        }
+                    }
+                    expect(cookies_num).to.be(43);
+                    done();
+                }
+            });
+        });        
+    });
+
 });
