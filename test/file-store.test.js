@@ -817,7 +817,7 @@ describe('Test file cookie store', function() {
             var cookies_urls = ['http://aff.store.com/', 'http://www.aff.store.com/', 
                 'http://store.com', 'http://www.store.com'],
                 fns = [];
-            for (i = 0; i < cookies_urls.length; i++) {                
+            for (i = 0; i < cookies_urls.length; i++) {
                 var func = Q.nbind(cookie_jar.getCookies, cookie_jar);
                 fns.push(func(cookies_urls[i]));
             }
@@ -825,7 +825,7 @@ describe('Test file cookie store', function() {
             var cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW),
                 cookie_jar2 = new TOUGH.CookieJar(new FileCookieStore(COOKIES_TEST_FILE_NEW));
 
-            Q.all(fns).spread(function(cookies1,cookies2,cookies3,cookies4){                
+            Q.all(fns).spread(function(cookies1,cookies2,cookies3,cookies4){
                 expect(cookies1).to.be.a(Array);
                 expect(cookies1).to.have.length(6);
                 expect(cookies2).to.be.a(Array);
@@ -864,7 +864,13 @@ describe('Test file cookie store', function() {
 
     describe("#export", function () {
         it('should export cookies to the array', function (done) {
+
             cookie_store.export(function (err, cookies) {
+
+                cookies.forEach(function(c, i){
+                    console.log(c.toString());
+                });
+
                 if (err) {
                     done(err);
                 } else {
@@ -900,7 +906,7 @@ describe('Test file cookie store', function() {
                     done();
                 }
             });
-        });        
+        });
     });
 
 });

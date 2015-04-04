@@ -15,6 +15,7 @@ var jar = new CookieJar(new FileCookieStore("./cookie.txt", {lockfile : true}));
 ```
 
 ## Installation
+
 If you have npm installed, you can simply type:
           
           npm install file-cookie-store
@@ -49,6 +50,20 @@ Q.nbind(jar.setCookie, jar)(new new TOUGH.Cookie({...}), 'http://test.com/')
           return Q.nbind(jar.setCookie, jar)(new TOUGH.Cookie({...}), 'http://test.com/')
 }).then(function () {
           return Q.nbind(cookies_store.save, cookies_store)();//save changes to the file
+});
+```
+
+#### Export cookies
+
+For receive all cookies from the store might be used method export:
+
+``` javascript
+cookie_store.export(function(cookies) {
+  //array cookies
+});
+
+cookie_store.export(new MemoryCookieStore(),function(memory_cookie_store) { 
+  //memory_cookie_store
 });
 ```
 
