@@ -97,7 +97,6 @@ describe('Test file cookie store', function() {
     describe("#findCookie", function () {
         
         it ('should find amazon cookie', function (done) {
-            
             cookie_store.findCookie('.amazon.com', '/', 'skin', function (err, cookie) {
 
                 expect(err).not.to.be.ok();
@@ -108,7 +107,6 @@ describe('Test file cookie store', function() {
                 expect(cookie.secure).not.to.be.ok();
                 expect(cookie.path).to.be('/');
                 expect(cookie.httpOnly).not.to.be.ok();
-                
                 done();
             });
         });
@@ -866,11 +864,6 @@ describe('Test file cookie store', function() {
         it('should export cookies to the array', function (done) {
 
             cookie_store.export(function (err, cookies) {
-
-                cookies.forEach(function(c, i){
-                    console.log(c.toString());
-                });
-
                 if (err) {
                     done(err);
                 } else {
