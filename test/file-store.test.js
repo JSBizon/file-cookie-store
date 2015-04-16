@@ -541,7 +541,7 @@ describe('Test file cookie store', function() {
         var cookie_jar;
             
         beforeEach(function(done){
-            cookie_jar = new TOUGH.CookieJar(new FileCookieStore(COOKIES_TEST_FILE2));
+            cookie_jar = new TOUGH.CookieJar(cookie_store);
             done();
         });
 
