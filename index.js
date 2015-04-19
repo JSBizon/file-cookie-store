@@ -376,14 +376,14 @@ FileCookieStore.prototype.removeCookies = function(domain, path, cb) {
 };
 
 
-FileCookieStore.prototype.export = function(file_store, cb) {
+FileCookieStore.prototype.export = function(cookie_store, cb) {
     var self = this;
     if ( arguments.length < 2) {
-        cb = file_store;
-        file_store = null;
+        cb = cookie_store;
+        cookie_store = null;
     }
-    if (! file_store) {
-        file_store = [];
+    if (! cookie_store) {
+        cookie_store = [];
     }
     this._read(function (err) {
         var fns = [];
@@ -396,11 +396,11 @@ FileCookieStore.prototype.export = function(file_store, cb) {
                     if ( ! idx[domain][path].hasOwnProperty(key) ) continue;
                     var cookie = idx[domain][path][key];
                     if (cookie) {
-                        if (file_store instanceof TOUGH.Store) {
-                            var func = Q.nbind(file_store.putCookie, file_store);
+                        if (cookie_store instanceof TOUGH.Store) {
+                            var func = Q.nbind(cookie_store.putCookie, cookie_store);
                             fns.push(func(cookie));
                         } else {
-                            file_store.push(cookie);
+                            cookie_store.push(cookie);
                         }
                     }
                 }
@@ -409,18 +409,18 @@ FileCookieStore.prototype.export = function(file_store, cb) {
 
         if (fns.length) {
             Q.all(fns).then(function(){
-                cb(null, file_store);
+                cb(null, cookie_store);
             }).
             catch(function (err){
                 cb(err);
             }).
             done();
         } else {
-            cb(null, file_store);
+            cb(null, cookie_store);
         }
     });
 
-    return file_store;
+    return cookie_store;
 };
 
 module.exports = FileCookieStore;
