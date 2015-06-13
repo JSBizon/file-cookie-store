@@ -98,15 +98,18 @@ describe('Test file cookie store', function() {
         
         it ('should find amazon cookie', function (done) {
             cookie_store.findCookie('.amazon.com', '/', 'skin', function (err, cookie) {
-
-                expect(err).not.to.be.ok();
-                expect(cookie).to.be.a(TOUGH.Cookie);
-                expect(cookie.key).to.be('skin');
-                expect(cookie.value).to.be('noskin');
-                expect(cookie.expires).to.be('Infinity');
-                expect(cookie.secure).not.to.be.ok();
-                expect(cookie.path).to.be('/');
-                expect(cookie.httpOnly).not.to.be.ok();
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).to.be.a(TOUGH.Cookie);
+                    expect(cookie.key).to.be('skin');
+                    expect(cookie.value).to.be('noskin');
+                    expect(cookie.expires).to.be('Infinity');
+                    expect(cookie.secure).not.to.be.ok();
+                    expect(cookie.path).to.be('/');
+                    expect(cookie.httpOnly).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
@@ -114,25 +117,29 @@ describe('Test file cookie store', function() {
         it ('should find httpOnly cookie', function (done) {
 
             cookie_store.findCookie('.alibaba.com', '/path/test', 'xman_f', function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).to.be.a(TOUGH.Cookie);
-                expect(cookie.key).to.be('xman_f');
-                expect(cookie.value).to.be('fUW2oGT39LOjTSJEvoSq+tfDjwQ1hO+QEEvx+D0eUDjWGotyXIFKVtj1DJi+k50tivsK3bmd8VlLjNm1XbmORTf/Xylom0EWEyPMtJuOqjqKUnkBr3cyww==');
-                expect(cookie.expires.getFullYear()).to.be(2082);
-                expect(cookie.path).to.be('/path/test');
-                expect(cookie.httpOnly).to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).to.be.a(TOUGH.Cookie);
+                    expect(cookie.key).to.be('xman_f');
+                    expect(cookie.value).to.be('fUW2oGT39LOjTSJEvoSq+tfDjwQ1hO+QEEvx+D0eUDjWGotyXIFKVtj1DJi+k50tivsK3bmd8VlLjNm1XbmORTf/Xylom0EWEyPMtJuOqjqKUnkBr3cyww==');
+                    expect(cookie.expires.getFullYear()).to.be(2082);
+                    expect(cookie.path).to.be('/path/test');
+                    expect(cookie.httpOnly).to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('should not find cookie', function (done) {
             cookie_store.findCookie('.alibaba.com', '/', 'xman_f', function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
@@ -140,50 +147,60 @@ describe('Test file cookie store', function() {
         it('should not find cookie(file not found)', function (done) {
             var cookie_empty_store = new FileCookieStore(COOKIES_EMPTY_FILE);
             cookie_empty_store.findCookie('.amazon.com', '/', 'skin', function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('wrong arguments', function (done) {
             cookie_store.findCookie(null, null, null, function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('wrong arguments2', function (done) {
             cookie_store.findCookie(null, '/', null, function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('wrong arguments3', function (done) {
             cookie_store.findCookie('.amazon.com', null, 'skin', function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('wrong arguments4', function (done) {
             cookie_store.findCookie('.amazon.com', '/', null, function (err, cookie) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookie).not.to.be.ok();
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookie).not.to.be.ok();
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
@@ -195,26 +212,30 @@ describe('Test file cookie store', function() {
         it ('should find cookies for ebay.com', function (done) {
             
             cookie_store.findCookies('.ebay.com', null, function (err, cookies) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookies).to.be.a(Array);
-                expect(cookies).to.have.length(5);
-                expect(cookies[0]).to.be.a(TOUGH.Cookie);
-                expect(cookies[0].domain).to.be('ebay.com');
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(5);
+                    expect(cookies[0]).to.be.a(TOUGH.Cookie);
+                    expect(cookies[0].domain).to.be('ebay.com');
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
         
         it ('should find cookies for top level domain', function (done) {
             cookie_store.findCookies('www.facebook.com', null, function (err, cookies) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookies).to.be.a(Array);
-                expect(cookies).to.have.length(4);
-                expect(cookies[0]).to.be.a(TOUGH.Cookie);
-                expect(cookies[0].domain).to.be('facebook.com');
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(4);
+                    expect(cookies[0]).to.be.a(TOUGH.Cookie);
+                    expect(cookies[0].domain).to.be('facebook.com');
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
@@ -227,11 +248,13 @@ describe('Test file cookie store', function() {
         
         it ('wrong arguments', function (done) {
             cookie_store.findCookies(undefined, null, function (err, cookies) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookies).to.be.a(Array);
-                expect(cookies).to.have.length(0);
-                
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(0);
+                } catch (e) {
+                    return done(e);
+                }
                 done();
             });
         });
@@ -251,34 +274,40 @@ describe('Test file cookie store', function() {
         
         it ('should save cookie', function (done) {
             cookie_store.findCookies('.ebay.com', null, function (err, cookies) {
-                
-                expect(err).not.to.be.ok();
-                expect(cookies).to.be.a(Array);
-                expect(cookies).to.have.length(5);
-                
-                var fns = [],
-                    cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW);
-                
-                cookies.forEach(function (cookie) {
-                    var func = Q.nbind(cookie_store2.putCookie, cookie_store2);
-                    fns.push(func(cookie));
-                });
-                
-                var new_cookie_store = new FileCookieStore(COOKIES_TEST_FILE_NEW),
-                    findCookies = Q.nbind(new_cookie_store.findCookies, new_cookie_store ,'.ebay.com', null);
-                
-                Q.all(fns).
-                    then(function () { return findCookies() }).
-                    then(function(cookies){
+                try {
+                    expect(err).not.to.be.ok();
+                    expect(cookies).to.be.a(Array);
+                    expect(cookies).to.have.length(5);
+
+                    var fns = [],
+                        cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE_NEW);
+
+                    cookies.forEach(function(cookie) {
+                        var func = Q.nbind(cookie_store2.putCookie, cookie_store2);
+                        fns.push(func(cookie));
+                    });
+
+                    var new_cookie_store = new FileCookieStore(COOKIES_TEST_FILE_NEW),
+                        findCookies = Q.nbind(new_cookie_store.findCookies, new_cookie_store, '.ebay.com', null);
+
+                    Q.all(fns).
+                    then(function() {
+                        return findCookies()
+                    }).
+                    then(function(cookies) {
+                        
                         expect(cookies).to.be.a(Array);
                         expect(cookies).to.have.length(5);
-                        
+
                         done();
                     }).
-                    catch(function (err) {
+                    catch(function(err) {
                         done(err);
                     }).
                     done();
+                } catch (e) {
+                    return done(e);
+                }
             });
         });
         
@@ -289,7 +318,6 @@ describe('Test file cookie store', function() {
             
             findCookie().
                 then(function (cookie) {
-                    
                     expect(cookie.key).to.be('guest_id');
                     expect(cookie.value).to.be('v1:141105733211768497');
                     
@@ -858,6 +886,19 @@ describe('Test file cookie store', function() {
             }).
             done();
         });
+
+        it('#serialize', function (done) {
+            Q.nbind(cookie_jar.serialize, cookie_jar)()
+                .then(function (serialized_object) {
+                    expect(serialized_object.cookies).to.be.a(Array);
+                    expect(serialized_object.cookies).to.have.length(43);
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                })
+                .done();
+        });
     });
 
     describe("#export", function () {
@@ -867,8 +908,12 @@ describe('Test file cookie store', function() {
                 if (err) {
                     done(err);
                 } else {
-                    expect(cookies).to.be.a(Array);
-                    expect(cookies).to.have.length(43);
+                    try {
+                        expect(cookies).to.be.a(Array);
+                        expect(cookies).to.have.length(43);
+                    } catch (e) {
+                        return done(e);
+                    }
                     done();
                 }
             });
@@ -877,26 +922,48 @@ describe('Test file cookie store', function() {
         it('should export cookies to the other store', function (done) {
             var memory_cookie_store = new MemoryCookieStore();
             cookie_store.export(memory_cookie_store, function (err, cookies) {
-                if (err) {
-                    done(err);
-                } else {
-                    var idx = memory_cookie_store.idx,
-                        cookies_num = 0;
-                    for (var domain in idx) {
-                        if ( ! idx.hasOwnProperty(domain) ) continue;
-                        for ( var path in idx[domain] ) {
-                            if ( ! idx[domain].hasOwnProperty(path) ) continue;
-                            for ( var key in idx[domain][path] ) {
-                                if ( ! idx[domain][path].hasOwnProperty(key) ) continue;
-                                var cookie = idx[domain][path][key];
-                                if (cookie) {
-                                    ++cookies_num;
+                try {
+                    if (err) {
+                        return done(err);
+                    } else {
+                        var idx = memory_cookie_store.idx,
+                            cookies_num = 0;
+                        for (var domain in idx) {
+                            if (!idx.hasOwnProperty(domain)) continue;
+                            for (var path in idx[domain]) {
+                                if (!idx[domain].hasOwnProperty(path)) continue;
+                                for (var key in idx[domain][path]) {
+                                    if (!idx[domain][path].hasOwnProperty(key)) continue;
+                                    var cookie = idx[domain][path][key];
+                                    if (cookie) {
+                                        ++cookies_num;
+                                    }
                                 }
                             }
                         }
+                        expect(cookies_num).to.be(43);
+                        done();
                     }
-                    expect(cookies_num).to.be(43);
-                    done();
+                } catch (e) {
+                    return done(e);
+                }
+            });
+        });
+    });
+
+    describe("#getAllCookies", function () {
+        it('should fetch all cookies', function (done) {
+            cookie_store.getAllCookies(function (err, cookies) {
+                if (err) {
+                    done(err);
+                } else {
+                    try{
+                        expect(cookies).to.be.a(Array);
+                        expect(cookies).to.have.length(43);
+                        done();
+                    } catch (e) {
+                        return done(e);
+                    }
                 }
             });
         });

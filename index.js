@@ -223,7 +223,8 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
                 domain : can_domain,
                 path : parsed[2],
                 secure : parsed[3] == 'TRUE' ? true : false,
-                expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : undefined,
+                //expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : undefined,
+                expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : 'Infinity',
                 key : decodeURIComponent(parsed[5]),
                 value : decodeURIComponent(parsed[6]),
                 httpOnly : http_only,
@@ -421,6 +422,20 @@ FileCookieStore.prototype.export = function(cookie_store, cb) {
     });
 
     return cookie_store;
+};
+
+
+FileCookieStore.prototype.getAllCookies = function(cb) {
+    this.export(function (err, cookies) {
+        if (err) {
+            cb(err);
+        } else {
+            cookies.sort(function(a,b) {
+                return (a.creationIndex||0) - (b.creationIndex||0);
+            });
+            cb(null, cookies);
+        }
+    });
 };
 
 module.exports = FileCookieStore;
