@@ -1,13 +1,13 @@
 "use strict";
 
-var FS = require('fs'), 
+var fs = require('fs'), 
     UTIL = require('util'),
     Q = require('q'),
     TOUGH = require('tough-cookie'),
     canonicalDomain = TOUGH.canonicalDomain,
     permuteDomain = TOUGH.permuteDomain,
     permutePath = TOUGH.permutePath,
-    LOCKFILE = require('lockfile');
+LOCKFILE = require('lockfile');
 
 function isString (str) {
     return typeof str === 'string' || str instanceof String;
@@ -43,13 +43,17 @@ function FileCookieStore(file, opt) {
         throw new Error("Unknown file for read/write cookies");
     }
 
+    if(!fs.existsSync(this.file)){
+	fs.writeFileSync(this.file,'');
+    }
+
     this.idx = {};
 }
 
 UTIL.inherits(FileCookieStore, TOUGH.Store);
 
 FileCookieStore.prototype.idx = null;
-FileCookieStore.prototype.synchronous = false;
+FileCookieStore.prototype.synchronous = true;
 
 
 FileCookieStore.prototype.inspect = function() {
@@ -58,88 +62,93 @@ FileCookieStore.prototype.inspect = function() {
 
 
 FileCookieStore.prototype._readFile = function (cb) {
-    var self = this;
-    Q.nfcall(FS.readFile, self.file, 'utf8').
-    then(function (data) {
-        self.readed = true;
-        if ( ! data ) { return cb(null, self); }
-        self.deserialize(data);
-        cb(null, self);
-    }).
-    catch(function(err){
-        if ( ! (err.code && err.code === 'ENOENT' && ! self.no_file_error ) ) 
-            cb(err);
-        else
-            cb();
-    }).done();
+    var data=null;
+    
+    try{
+	data = fs.readFileSync(this.file, 'utf8');
+    }catch(e){
+	if(e.code === "ENOENT")
+	    fs.writeFileSync(this.file, "# Netscape HTTP Cookie File\n" +
+                "# http://www.netscape.com/newsref/std/cookie_spec.html\n" +
+                "# This is a generated file!  Do not edit.\n\n");
+    }
+    
+    this.readed = true;
+    if(!data) {
+	return cb(null);
+    };
+
+    var err = null;
+    try{
+	this.deserialize(data);
+    }catch(e){
+	err = e;
+    }
+
+    cb(err);
 };
 
 
 FileCookieStore.prototype._read = function (cb) {
-    var self = this;
-    self._readFile(cb);
+    this._readFile(cb);
 };
 
 
 FileCookieStore.prototype._get_lock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
     
-    return ! disable_lock && this.lockfile ? Q.nfcall(LOCKFILE.lock, lock_file, {
-        retries : this.lockfile_retries,
-        retryWait : 50
-    }) : new Q();
+    if(! disable_lock && this.lockfile )
+	LOCKFILE.lockSync( lock_file);
 };
 
 
 FileCookieStore.prototype._get_unlock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
-    return ! disable_lock && this.lockfile ? Q.nfcall(LOCKFILE.unlock, lock_file)
-            : new Q();
+    if(! disable_lock && this.lockfile)
+	LOCKFILE.unlockSync( lock_file);
 };
 
 
 FileCookieStore.prototype._write = function (options, cb) {
-    var self = this,
-        data = this.serialize(this.idx);
+    var data = this.serialize(this.idx)
+    , err = null;
+    
     options = options || {}; 
     cb = cb || noop;
-    self._get_lock_func(options.disable_lock).
-        then(function () {
-            return Q.nfcall(FS.writeFile, self.file, data, {mode : self.mode });
-        }).
-        then(function () {
-            cb();
-        }).
-        catch(function (err) {
-            cb(err);
-        }).
-        fin(function() {
-            return self._get_unlock_func(options.disable_lock);
-        }).
-        done();
+    
+    this._get_lock_func(options.disable_lock);
+    try{
+	fs.writeFileSync(this.file, data, {mode : this.mode });
+    }catch(e){
+	err = e;
+    }
+    
+    cb(err);
+    
+    this._get_unlock_func(options.disable_lock);
 };
 
-
 FileCookieStore.prototype._update = function (updateFunc, cb) {
-    var self = this;
-    self._get_lock_func( ! self.auto_sync ).
-        then(function () {
-            return Q.nbind(self._read, self)();
-        }).
-        then(function () {
-            updateFunc();
-            return self.auto_sync ? Q.nbind(self._write, self)({disable_lock : true}) : new Q();
-        }).
-        then(function () {
-            cb();
-        }).
-        catch(function (err) {
-            cb(err);
-        }).
-        fin(function () {
-            return self._get_unlock_func(! self.auto_sync );
-        }).
-        done();
+    var err = null;
+    this._get_lock_func( ! this.auto_sync );// the file must be locked while auto_sync is true.
+    this._read(function(e){
+	if(e) err = e;
+    });
+    
+    if(err){
+	cb(err);
+	return this._get_unlock_func(! this.auto_sync );
+    }
+
+    updateFunc();
+    if(this.auto_sync ){
+	this._write({disable_lock : true}, function(e){
+	    if(e) err = e;
+	});
+    }
+
+    cb(err);
+    this._get_unlock_func(! this.auto_sync );
 };
 
 
@@ -340,6 +349,7 @@ FileCookieStore.prototype._addCookie = function (cookie) {
 
 FileCookieStore.prototype.putCookie = function (cookie, cb) {
     var self = this;
+
     this._update( function () {
         self._addCookie(cookie);
     }, cb);

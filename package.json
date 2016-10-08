@@ -8,7 +8,7 @@
     "url": "https://github.com/JSBizon/file-cookie-store.git"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "./node_modules/mocha/bin/mocha --reporter spec --bail --timeout 10000 test/*.js"
   },
   "keywords": [
     "Netscape",
