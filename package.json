@@ -29,7 +29,7 @@
     "grunt-contrib-jshint": "~0.10.0"
   },
   "dependencies": {
-    "tough-cookie": "~2.0.0",
+    "tough-cookie": "~2.4.3",
     "punycode": "~1.2.3",
     "lockfile": "~1.0.0",
     "q": "~1.0.1"
