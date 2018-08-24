@@ -175,8 +175,8 @@ FileCookieStore.prototype.serialize = function(idx) {
                              cookie.path,
                              cookie.secure ? "TRUE" : "FALSE", 
                              cookie.expires && cookie.expires != 'Infinity' ? Math.round(cookie.expires.getTime() / 1000) : 0,
-                             encodeURIComponent(cookie.key),
-                             encodeURIComponent(cookie.value),
+                             cookie.key,
+                             cookie.value,
                              ].join("\t")+ "\n";
                     data += line;
                     
@@ -234,8 +234,8 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
                 secure : parsed[3] == 'TRUE' ? true : false,
                 //expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : undefined,
                 expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : 'Infinity',
-                key : decodeURIComponent(parsed[5]),
-                value : decodeURIComponent(parsed[6]),
+                key : parsed[5],
+                value : parsed[6],
                 httpOnly : http_only,
                 hostOnly : /^\./.test(domain) ? false : true
             });
