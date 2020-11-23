@@ -270,7 +270,7 @@ FileCookieStore.prototype.findCookie = function(domain, path, key, cb) {
 };
 
 
-FileCookieStore.prototype.findCookies = function (domain, path, cb) {
+FileCookieStore.prototype.findCookies = function (domain, path, _, cb) {
     var self = this,
         results = [];
     if (! domain ) return cb(null,[]);

@@ -1,6 +1,6 @@
 {
   "name": "file-cookie-store",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Store cookies in Netscape's file",
   "main": "index.js",
   "repository": {
@@ -29,7 +29,7 @@
     "grunt-contrib-jshint": "~0.10.0"
   },
   "dependencies": {
-    "tough-cookie": "~2.4.3",
+    "tough-cookie": "~4.0.0",
     "punycode": "~1.2.3",
     "lockfile": "~1.0.0",
     "q": "~1.0.1"
