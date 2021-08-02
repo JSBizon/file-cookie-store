@@ -19,9 +19,7 @@ function lockFileName (file_name) {
     return file_name + '.lock';
 }
 
-function FileCookieStore(file, opt) {
-    FileCookieStore.super_.call(this);
-    
+function FileCookieStore(file, opt) {    
     opt = opt || {};
     this.file = file;
     this.force_parse = opt.hasOwnProperty('force_parse') ? opt.force_parse
