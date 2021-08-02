@@ -6,7 +6,7 @@
 .google.com.ua	TRUE	/	FALSE	1474129028	PREF	ID=b7bf0b7ae32f68f5:FF=0:TM=1411057028:LM=1411057028:S=6XSM7-cTBDMTB9tV
 #HttpOnly_.google.com.ua	TRUE	/	FALSE	1426868228	NID	67=JgS7DSq4xRuOIIFfU2pL_CqxASaDJT8XmuLDWDCcaPgcZqdvm37KF8xPqmfsnAfQuWDpKMmYgnOSBm1VW1TSYv_UaFLZkoNdlkYCd04XQxA3kAmnHmv2wTtXUAWB3Z0m
 #HttpOnly_www.ebay.com	FALSE	/	FALSE	0	JSESSIONID	1E8940733514EBBCD2A3D607486C0713
-.ebay.com	TRUE	/	FALSE	0	ebay	%5Esbf%3D%23%5E
+.ebay.com	TRUE	/	FALSE	0	ebay	^sbf=#^
 .ebay.com	TRUE	/	FALSE	1474129249	dp1	bu1p/QEBfX0BAX19AQA**55fc39e1^bl/UA57dd6d61^
 #HttpOnly_.ebay.com	TRUE	/	FALSE	0	s	CgAD4ACBUHFfhODk5MGVkM2QxNDgwYTVlNjgzMzg0MDRkZmZmMDFhMTKDyRtR
 .ebay.com	TRUE	/	FALSE	1442593249	nonsession	CgADLAAFUGw1pMQDKACBdgQfhODk5MGVkM2QxNDgwYTVlNjgzMzg0MDRkZmZmMDFhMTIBfArp
@@ -22,11 +22,11 @@ www.alibaba.com	FALSE	/	FALSE	0	JSESSIONID	DeS9eUwHYSUF2NLJhkm-pb5P
 #HttpOnly_.alibaba.com	TRUE	/path/test	FALSE	3558540915	xman_f	fUW2oGT39LOjTSJEvoSq+tfDjwQ1hO+QEEvx+D0eUDjWGotyXIFKVtj1DJi+k50tivsK3bmd8VlLjNm1XbmORTf/Xylom0EWEyPMtJuOqjqKUnkBr3cyww==
 .www.ya.ru	TRUE	/	FALSE	1726417289	yandexuid	1503552661411057290
 #HttpOnly_.facebook.com	TRUE	/	FALSE	1474129312	datr	oAYbVDrOuMrYKlXqFXeCv__b
-.facebook.com	TRUE	/	FALSE	1411057312	reg_ext_ref	deleted
-.facebook.com	TRUE	/	FALSE	0	reg_fb_ref	https%3A%2F%2Fwww.facebook.com%2Funsupportedbrowser
-.facebook.com	TRUE	/	FALSE	0	reg_fb_gate	https%3A%2F%2Fwww.facebook.com%2Funsupportedbrowser
-.twitter.com	TRUE	/	FALSE	1474129332	guest_id	v1%3A141105733211768497
-#HttpOnly_.twitter.com	TRUE	/	TRUE	0	_twitter_sess	BAh7CSIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoHaWQiJTU5MmFhMGQ1MjkzYTg3NmJlNTBlZWVh%250AN2M3YzI0YzY0Ogxjc3JmX2lkIiU4ODgwNjFkMmI2NzMyNjkwZmYyMjYwODUz%250AOTI4ZDQzNzoPY3JlYXRlZF9hdGwrCHsykolIAQ%253D%253D--0e8cfdd2ca30c75f02ac5984be7c8e2583e8922b2c11
+.facebook.com	TRUE	/	FALSE	3411057312	reg_ext_ref	deleted
+.facebook.com	TRUE	/	FALSE	0	reg_fb_ref	https://www.facebook.com/unsupportedbrowser
+.facebook.com	TRUE	/	FALSE	0	reg_fb_gate	https://www.facebook.com/unsupportedbrowser
+.twitter.com	TRUE	/	FALSE	1474129332	guest_id	v1:141105733211768497
+#HttpOnly_.twitter.com	TRUE	/	TRUE	0	_twitter_sess	BAh7CSIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%0ASGFzaHsABjoKQHVzZWR7ADoHaWQiJTU5MmFhMGQ1MjkzYTg3NmJlNTBlZWVh%0AN2M3YzI0YzY0Ogxjc3JmX2lkIiU4ODgwNjFkMmI2NzMyNjkwZmYyMjYwODUz%0AOTI4ZDQzNzoPY3JlYXRlZF9hdGwrCHsykolIAQ%3D%3D--0e8cfdd2ca30c75f02ac5984be7c8e2583e8922b2c11
 aff.store.com	FALSE	/	FALSE	3455118043	A	a7ee73682a47529054ed7f89104fd5fdsde
 aff.store.com	FALSE	/	FALSE	3455118043	A_auth	bb5fdfdlfd
 aff.store.com	FALSE	/	FALSE	0	A_pap_sid	a7ee73682a47529054ed7f89104fd5de

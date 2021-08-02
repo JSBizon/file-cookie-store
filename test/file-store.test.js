@@ -72,6 +72,7 @@ describe('Test file cookie store', function () {
             new FileCookieStore(COOKIES_BAD_FILE).findCookies(
                 '.ebay.com',
                 null,
+                null,
                 function (err) {
                     expect(err).to.be.ok();
 
@@ -83,7 +84,7 @@ describe('Test file cookie store', function () {
         it('should throw exception if file not found', function (done) {
             new FileCookieStore(COOKIES_TEST_FILE_NEW, {
                 no_file_error: true
-            }).findCookies('.ebay.com', null, function (err, cookies) {
+            }).findCookies('.ebay.com', null, null, function (err, cookies) {
                 expect(err).not.to.be.ok();
                 done();
             });
@@ -92,7 +93,7 @@ describe('Test file cookie store', function () {
         it('should parse bad formatted file', function (done) {
             new FileCookieStore(COOKIES_BAD_FILE, {
                 force_parse: true
-            }).findCookies('.ebay.com', null, function (err, cookies) {
+            }).findCookies('.ebay.com', null, null, function (err, cookies) {
                 expect(err).not.to.be.ok();
                 expect(cookies).to.have.length(5);
 
@@ -245,6 +246,7 @@ describe('Test file cookie store', function () {
             cookie_store.findCookies(
                 '.ebay.com',
                 null,
+                null,
                 function (err, cookies) {
                     try {
                         expect(err).not.to.be.ok();
@@ -263,6 +265,7 @@ describe('Test file cookie store', function () {
         it('should find cookies for top level domain', function (done) {
             cookie_store.findCookies(
                 'www.facebook.com',
+                null,
                 null,
                 function (err, cookies) {
                     try {
@@ -284,16 +287,21 @@ describe('Test file cookie store', function () {
         });
 
         it('wrong arguments', function (done) {
-            cookie_store.findCookies(undefined, null, function (err, cookies) {
-                try {
-                    expect(err).not.to.be.ok();
-                    expect(cookies).to.be.a(Array);
-                    expect(cookies).to.have.length(0);
-                } catch (e) {
-                    return done(e);
+            cookie_store.findCookies(
+                undefined,
+                null,
+                null,
+                function (err, cookies) {
+                    try {
+                        expect(err).not.to.be.ok();
+                        expect(cookies).to.be.a(Array);
+                        expect(cookies).to.have.length(0);
+                    } catch (e) {
+                        return done(e);
+                    }
+                    done();
                 }
-                done();
-            });
+            );
         });
     });
 
@@ -314,6 +322,7 @@ describe('Test file cookie store', function () {
             cookie_store.findCookies(
                 '.ebay.com',
                 null,
+                null,
                 function (err, cookies) {
                     expect(err).not.to.be.ok();
                     expect(cookies).to.be.a(Array);
@@ -331,6 +340,7 @@ describe('Test file cookie store', function () {
 
                     cookie_store2.findCookies(
                         '.ebay.com',
+                        null,
                         null,
                         function (e, cookies) {
                             expect(cookies).to.be.a(Array);
@@ -415,7 +425,7 @@ describe('Test file cookie store', function () {
                         cookie_store2.findCookies,
                         cookie_store2
                     );
-                    return findCookies(domain, null);
+                    return findCookies(domain, null, null);
                 })
                 .then(function (cookies) {
                     expect(cookies).to.be.a(Array);
@@ -479,6 +489,7 @@ describe('Test file cookie store', function () {
                     var cookie_store = new FileCookieStore(COOKIES_TEST_FILE2);
                     return Q.nbind(cookie_store.findCookies, cookie_store)(
                         test_domain,
+                        null,
                         null
                     );
                 })
@@ -544,6 +555,7 @@ describe('Test file cookie store', function () {
                     var cookie_store = new FileCookieStore(COOKIES_TEST_FILE2);
                     return Q.nbind(cookie_store.findCookies, cookie_store)(
                         test_domain,
+                        null,
                         null
                     );
                 })
@@ -606,7 +618,11 @@ describe('Test file cookie store', function () {
         it('should remove all domain cookies', function (done) {
             var test_domain = '.twitter.com';
 
-            Q.nbind(cookie_store.findCookies, cookie_store)(test_domain, null)
+            Q.nbind(cookie_store.findCookies, cookie_store)(
+                test_domain,
+                null,
+                null
+            )
                 .then(function (cookies) {
                     expect(cookies).to.be.a(Array);
                     expect(cookies).to.have.length(2);
@@ -619,6 +635,7 @@ describe('Test file cookie store', function () {
                     var cookie_store2 = new FileCookieStore(COOKIES_TEST_FILE2);
                     return Q.nbind(cookie_store2.findCookies, cookie_store2)(
                         test_domain,
+                        null,
                         null
                     );
                 })

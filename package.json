@@ -8,7 +8,8 @@
     "url": "https://github.com/JSBizon/file-cookie-store.git"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --reporter spec --bail --timeout 10000 test/*.js"
+    "lint": "npx jshint index.js",
+    "test": "npx mocha --reporter spec --bail --timeout 10000 test/*.js"
   },
   "keywords": [
     "Netscape",
@@ -21,12 +22,8 @@
     "cookie store"
   ],
   "devDependencies": {
-    "expect.js": "~0.2.0",
-    "mocha": "~2.2.1",
-    "grunt": "~0.4",
-    "grunt-cli": "~0.1.13",
-    "grunt-mocha-test": "~0.12.2",
-    "grunt-contrib-jshint": "~0.10.0"
+    "expect.js": "^0.2.0",
+    "mocha": "^2.2.5"
   },
   "dependencies": {
     "tough-cookie": "~4.0.0",
