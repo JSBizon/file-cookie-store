@@ -24,7 +24,6 @@ If you have npm installed, you can simply type:
 
           npm install file-cookie-store
 
-
 Or you can clone this repository using the git command:
 
           git clone git://github.com/JSBizon/file-cookie-store.git
