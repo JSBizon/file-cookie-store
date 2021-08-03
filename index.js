@@ -395,6 +395,10 @@ FileCookieStore.prototype.export = function(cookie_store, cb) {
         cookie_store = [];
     }
     this._read(function (err) {
+	if (err) {
+            cb(err);
+            return;
+	}
         var fns = [];
         var idx = self.idx;
         for (var domain in idx) {
