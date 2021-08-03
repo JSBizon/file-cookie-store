@@ -1,13 +1,13 @@
 'use strict';
 
-var fs = require('fs'),
-    UTIL = require('util'),
-    Q = require('q'),
-    TOUGH = require('tough-cookie'),
-    canonicalDomain = TOUGH.canonicalDomain,
-    permuteDomain = TOUGH.permuteDomain,
-    permutePath = TOUGH.permutePath,
-    LOCKFILE = require('lockfile');
+var fs = require('fs');
+var UTIL = require('util');
+var Q = require('q');
+var TOUGH = require('tough-cookie');
+var canonicalDomain = TOUGH.canonicalDomain;
+var permuteDomain = TOUGH.permuteDomain;
+var permutePath = TOUGH.permutePath;
+var LOCKFILE = require('lockfile');
 
 function isString(str) {
     return typeof str === 'string' || str instanceof String;
@@ -131,7 +131,10 @@ FileCookieStore.prototype._update = function (updateFunc, cb) {
     var err = null;
     this._get_lock_func(!this.auto_sync); // the file must be locked while auto_sync is true.
     this._read(function (e) {
-        if (e) err = e;
+        // TODO is this synchrous?
+        if (e) {
+            err = e;
+        }
     });
 
     if (err) {
@@ -142,7 +145,10 @@ FileCookieStore.prototype._update = function (updateFunc, cb) {
     updateFunc();
     if (this.auto_sync) {
         this._write({ disable_lock: true }, function (e) {
-            if (e) err = e;
+            // okay because _write is sync
+            if (e) {
+                err = e;
+            }
         });
     }
 
@@ -157,11 +163,17 @@ FileCookieStore.prototype.serialize = function (idx) {
         '# This is a generated file!  Do not edit.\n\n';
 
     for (var domain in idx) {
-        if (!idx.hasOwnProperty(domain)) continue;
+        if (!idx.hasOwnProperty(domain)) {
+            continue;
+        }
         for (var path in idx[domain]) {
-            if (!idx[domain].hasOwnProperty(path)) continue;
+            if (!idx[domain].hasOwnProperty(path)) {
+                continue;
+            }
             for (var key in idx[domain][path]) {
-                if (!idx[domain][path].hasOwnProperty(key)) continue;
+                if (!idx[domain][path].hasOwnProperty(key)) {
+                    continue;
+                }
                 var cookie = idx[domain][path][key];
                 if (cookie) {
                     var cookie_domain = cookie.domain;
@@ -207,10 +219,11 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
     if (
         (!magic || !/^\#(?: Netscape)? HTTP Cookie File/.test(magic)) &&
         !self.force_parse
-    )
+    ) {
         throw new Error(
             this.file + ' does not look like a netscape cookies file'
         );
+    }
 
     data_by_line.forEach(function (line) {
         ++line_num;
@@ -228,10 +241,13 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
             }
 
             parsed = line.split(/\t/);
-            if (parsed.length !== 7)
+            if (parsed.length !== 7) {
                 if (!self.force_parse) {
                     throw new Error('Line ' + line_num + ' is not valid');
-                } else return;
+                } else {
+                    return;
+                }
+            }
 
             var domain = parsed[0],
                 can_domain = canonicalDomain(domain);
@@ -262,7 +278,9 @@ FileCookieStore.prototype.save = function (cb) {
 FileCookieStore.prototype.findCookie = function (domain, path, key, cb) {
     var self = this;
     this._read(function (err) {
-        if (err) return cb(err);
+        if (err) {
+            return cb(err);
+        }
         var can_domain = canonicalDomain(domain);
 
         if (!self.idx[can_domain]) {
@@ -280,11 +298,15 @@ FileCookieStore.prototype.findCookie = function (domain, path, key, cb) {
 FileCookieStore.prototype.findCookies = function (domain, path, _, cb) {
     var self = this,
         results = [];
-    if (!domain) return cb(null, []);
+    if (!domain) {
+        return cb(null, []);
+    }
 
     var can_domain = canonicalDomain(domain);
     this._read(function (err) {
-        if (err) return cb(err);
+        if (err) {
+            return cb(err);
+        }
 
         var pathMatcher;
         if (!path) {
@@ -409,11 +431,17 @@ FileCookieStore.prototype.export = function (cookie_store, cb) {
         var fns = [];
         var idx = self.idx;
         for (var domain in idx) {
-            if (!idx.hasOwnProperty(domain)) continue;
+            if (!idx.hasOwnProperty(domain)) {
+                continue;
+            }
             for (var path in idx[domain]) {
-                if (!idx[domain].hasOwnProperty(path)) continue;
+                if (!idx[domain].hasOwnProperty(path)) {
+                    continue;
+                }
                 for (var key in idx[domain][path]) {
-                    if (!idx[domain][path].hasOwnProperty(key)) continue;
+                    if (!idx[domain][path].hasOwnProperty(key)) {
+                        continue;
+                    }
                     var cookie = idx[domain][path][key];
                     if (cookie) {
                         if (cookie_store instanceof TOUGH.Store) {
