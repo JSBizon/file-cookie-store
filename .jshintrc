@@ -1,15 +1,13 @@
 {
-  "esversion": 11,
-  "moz": true,
-  "node": true,
-  "curly": false,
-  "eqeqeq": false,
-  "immed": true,
-  "undef": true,
-  "unused": false,
-  "latedef": "nofunc",
-  "asi": true,
-  "iterator": true,
-  "loopfunc": true,
-  "laxbreak": true
+    "esversion": 11,
+    "node": true,
+    "curly": false,
+    "eqeqeq": true,
+    "immed": true,
+    "undef": true,
+    "unused": true,
+    "latedef": "nofunc",
+    "iterator": true,
+    "loopfunc": true,
+    "laxbreak": true
 }

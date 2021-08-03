@@ -64,13 +64,14 @@ FileCookieStore.prototype._readFile = function (cb) {
     try {
         data = fs.readFileSync(this.file, 'utf8');
     } catch (e) {
-        if (e.code === 'ENOENT')
+        if (e.code === 'ENOENT') {
             fs.writeFileSync(
                 this.file,
                 '# Netscape HTTP Cookie File\n' +
                     '# http://www.netscape.com/newsref/std/cookie_spec.html\n' +
                     '# This is a generated file!  Do not edit.\n\n'
             );
+        }
     }
 
     this.readed = true;
@@ -95,12 +96,16 @@ FileCookieStore.prototype._read = function (cb) {
 FileCookieStore.prototype._get_lock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
 
-    if (!disable_lock && this.lockfile) LOCKFILE.lockSync(lock_file);
+    if (!disable_lock && this.lockfile) {
+        LOCKFILE.lockSync(lock_file);
+    }
 };
 
 FileCookieStore.prototype._get_unlock_func = function (disable_lock) {
     var lock_file = lockFileName(this.file);
-    if (!disable_lock && this.lockfile) LOCKFILE.unlockSync(lock_file);
+    if (!disable_lock && this.lockfile) {
+        LOCKFILE.unlockSync(lock_file);
+    }
 };
 
 FileCookieStore.prototype._write = function (options, cb) {
@@ -171,7 +176,7 @@ FileCookieStore.prototype.serialize = function (idx) {
                             /^\./.test(cookie_domain) ? 'TRUE' : 'FALSE',
                             cookie.path,
                             cookie.secure ? 'TRUE' : 'FALSE',
-                            cookie.expires && cookie.expires != 'Infinity'
+                            cookie.expires && cookie.expires !== 'Infinity'
                                 ? Math.round(cookie.expires.getTime() / 1000)
                                 : 0,
                             cookie.key,
@@ -223,7 +228,7 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
             }
 
             parsed = line.split(/\t/);
-            if (parsed.length != 7)
+            if (parsed.length !== 7)
                 if (!self.force_parse) {
                     throw new Error('Line ' + line_num + ' is not valid');
                 } else return;
@@ -234,7 +239,7 @@ FileCookieStore.prototype.deserialize = function (raw_data) {
             var cookie = new TOUGH.Cookie({
                 domain: can_domain,
                 path: parsed[2],
-                secure: parsed[3] == 'TRUE' ? true : false,
+                secure: parsed[3] === 'TRUE' ? true : false,
                 //expires : parseInt(parsed[4]) ? new Date(parsed[4] * 1000) : undefined,
                 expires: parseInt(parsed[4])
                     ? new Date(parsed[4] * 1000)
