@@ -1,0 +1,13 @@
+{
+    "esversion": 11,
+    "node": true,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "undef": true,
+    "unused": true,
+    "latedef": "nofunc",
+    "iterator": true,
+    "loopfunc": true,
+    "laxbreak": true
+}
