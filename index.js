@@ -261,9 +261,13 @@ FileCookieStore.prototype.findCookie = function(domain, path, key, cb) {
 };
 
 
-FileCookieStore.prototype.findCookies = function (domain, path, cb) {
+FileCookieStore.prototype.findCookies = function (domain, path, allowSpecialUseDomain, cb) {
     var self = this,
         results = [];
+    if (typeof allowSpecialUseDomain === "function") {
+        cb = allowSpecialUseDomain;
+        allowSpecialUseDomain = false;
+    }
     if (! domain ) return cb(null,[]);
     
     var can_domain = canonicalDomain(domain);
@@ -312,7 +316,7 @@ FileCookieStore.prototype.findCookies = function (domain, path, cb) {
             };
         }
         
-        var domains = permuteDomain(can_domain) || [can_domain];
+        var domains = permuteDomain(can_domain, allowSpecialUseDomain) || [can_domain];
         var idx = self.idx;
         domains.forEach(function(curDomain) {
             var domainIndex = idx[curDomain];
